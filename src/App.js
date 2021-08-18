@@ -1,48 +1,10 @@
 import './App.css';
 import * as utilities from './utils.js'
 import React, { useState } from 'react';
+import MovieCard from './MovieCard.js';
+import MovieDetails from './MovieDetails.js'
 
 function App() {
-
-  // functional component for MovieCard
-  function MovieCard({value}) {
-    return (
-      <div id="MovieCard">
-        <img src={value.Poster} alt="movie_poster" />
-        <h3>{value.Title}</h3>
-        <p>{value.Type[0].toUpperCase() + value.Type.substring(1)}</p>
-      </div>
-    );
-  }
-  
-  // functional component for MovieDetails
-  function MovieDetails({value}){
-    return (
-      <div id="MovieDetails">
-        <div className="twoColumn">
-          <img src={value.Poster} alt="movie_poster" />
-        </div>
-        <div className="twoColumn">
-          <h2>{value.Title}</h2>
-          <p className="details">{value.Rated}</p>
-          <p className="details">{value.Runtime}</p>
-          <p className="details">{value.Genre}</p>
-          <br/>
-          <br/>
-          <h3>Plot</h3>
-          <p>{value.Plot}</p>
-          <br/>
-          <h3>Actors</h3>
-          <p>{value.Actors}</p>
-          <br/>
-          {value.Ratings.map((movie, index) => (
-            <p key={index} >{movie.Source}: {movie.Value}</p>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   // takes and stores user input using React Hooks
   const [searchInput, setSearchInput] = useState("");
   const [identificationInput, setIdentificationInput] = useState("");
@@ -76,7 +38,6 @@ function App() {
       setUIOutput(null);
       setUIOutput(outputArr);
     }
-    
   }
 
   return (
