@@ -1,6 +1,6 @@
 export async function getMoviesBySearchTerm(input) {
   //API Key
-  const apiKey = 'bcd042f5'
+  const apiKey = 'API KEY HERE'
   //API URL
   const URL = `http://www.omdbapi.com/?apikey=${apiKey}&s=${input}`;
 
@@ -25,7 +25,7 @@ export async function getMoviesBySearchTerm(input) {
 
 export async function getMovieDetailsById(input) {
   //API Key
-  const apiKey = 'bcd042f5'
+  const apiKey = 'API KEY HERE'
   //API URL
   const URL = `http://www.omdbapi.com/?apikey=${apiKey}&i=${input}`;
 
