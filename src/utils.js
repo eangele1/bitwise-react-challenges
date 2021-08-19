@@ -14,12 +14,18 @@ export async function getMoviesBySearchTerm(input) {
     * main requirement is fulfilled, extra code below is optional
     * for displaying data properly in a UI 
     */
-    console.log(jsonData.Search);
+    console.log(jsonData);
 
-    return jsonData.Search;
+    return jsonData;
 
   } catch(e){
     console.log(e);
+
+    const err = {
+      Error: String(e)
+    };
+
+    return err;
   }
 }
 
@@ -41,9 +47,15 @@ export async function getMovieDetailsById(input) {
     */
     console.log(jsonData);
 
-    return jsonData
+    return jsonData;
 
   } catch(e){
     console.log(e);
+
+    const err = {
+      Error: String(e)
+    };
+
+    return err;
   }
 }

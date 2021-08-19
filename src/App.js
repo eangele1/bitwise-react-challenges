@@ -1,43 +1,64 @@
 import './App.css';
 import * as utilities from './utils.js'
 import React, { useState } from 'react';
-import MovieCard from './MovieCard.js';
-import MovieDetails from './MovieDetails.js'
+import MovieCard from './components/MovieCard.js';
+import MovieDetails from './components/MovieDetails.js'
+import Spinner from './components/Spinner.js';
 
 function App() {
   // takes and stores user input using React Hooks
-  const [searchInput, setSearchInput] = useState("");
-  const [identificationInput, setIdentificationInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [IDSearchTerm, setIDSearchTerm] = useState("");
+
+  // stores a loading state for UI to display
+  const [isLoading, setLoadState] = useState(false);
 
   // stores user interface output
   const [UIOutput, setUIOutput] = useState(null);
 
-  async function searchSubmit(input){
-    var arr = await utilities.getMoviesBySearchTerm(input);
-    let outputArr = [];
-    for (const i in arr) {
-      outputArr.push(<MovieCard key={i} value={arr[i]} />);
-    }
+  async function searchSubmit(input, choice){
     setUIOutput(null);
-    setUIOutput(outputArr);
-  }
-  
-  async function IDSubmit(input){
-    var obj = await utilities.getMovieDetailsById(input);
+    setLoadState(true);
+
+    if (input === ""){
+      setLoadState(false);
+      return;
+    }
+
+    var obj = null;
+
+    switch(choice){
+      case 0:
+      obj = await utilities.getMoviesBySearchTerm(input);
+        break;
+      case 1:
+      obj = await utilities.getMovieDetailsById(input);
+        break;
+      default:
+        break;
+    }
 
     // extracts keys from json object and converts into array
     const propertyKeys = Object.keys(obj);
 
-    let outputArr = [];
-
     if(propertyKeys.includes("Error")){
-      setUIOutput(null);
+      setUIOutput(<p>Error: {obj.Error}</p>);
+      setLoadState(false);
+      return;
     }
-    else{
-      outputArr.push(<MovieDetails key={0} value={obj} />);
-      setUIOutput(null);
+
+    if(choice === 0){
+      // initializes array that will contain our UI components to render to the screen
+      let outputArr = [];
+      for (const i in obj.Search) {
+        outputArr.push(<MovieCard key={i} value={obj.Search[i]} />);
+      }
       setUIOutput(outputArr);
     }
+
+    if (choice === 1) setUIOutput(<MovieDetails key={0} value={obj} />);
+
+    setLoadState(false);
   }
 
   return (
@@ -51,17 +72,27 @@ function App() {
           Movie Search
         </h1>
         <br/>
+
         {/* First user input; searches movies by title */}
         <label>Search by Title:</label>
-        <input type="text" placeholder="Title" onChange={e => setSearchInput(e.target.value)} />
-        <button onClick={() => searchSubmit(searchInput)}>Submit</button>
         <br/>
+        <input type="text" placeholder="Title" onChange={e => setSearchTerm(String(e.target.value))} />
+        <button onClick={() => searchSubmit(searchTerm, 0)}>Submit</button>
+        <br/>
+        <br/>
+
         {/* Second user input; searches specific movie by IMDb ID */}
         <label>Search by IMDb ID:</label>
-        <input type="text" placeholder="ID" onChange={e => setIdentificationInput(e.target.value)} />
-        <button onClick={() => IDSubmit(identificationInput)}>Submit</button>
         <br/>
+        <input type="text" placeholder="ID" onChange={e => setIDSearchTerm(String(e.target.value))} />
+        <button onClick={() => searchSubmit(IDSearchTerm, 1)}>Submit</button>
+        <br/>
+        <br/>
+
+        {/* Displays whatever state the app is in and what data is returned */}
         <label>–Output–</label>
+        <br/>
+        <Spinner LoadState={isLoading} />
         <div id="output">{UIOutput}</div>
       </header>
     </div>
