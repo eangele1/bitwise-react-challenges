@@ -28,21 +28,21 @@
 
 #MovieDetails {
   margin-top: 10px;
-  width: 800px;
-  height: fit-content;
-  border-color: gray;
-  border-style: solid;
-  border-width: 2px;
+  width: fit-content;
 }
 
 #MovieDetails .twoColumn{
-  width: 50%;
+  width: 49%;
+  height: fit-content;
   float: left;
   text-align: left;
+  min-height: 50vh;
 }
 
 #MovieDetails img {
   width: 90%;
+  max-width: 450px;
+  max-height: 650px;
 }
 
 #MovieDetails p, h3, h2 {
@@ -61,16 +61,12 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.App-header {
-  font-size: calc(10px + 2vmin);
-}
-
-.App-link {
-  color: #61dafb;
+.App {
+  text-align: center;
 }
 
 #output {
-  height: 50vh;
+  height: fit-content;
   display: flex;
   flex-wrap: nowrap;
   margin: 0;

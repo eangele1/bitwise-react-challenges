@@ -1,61 +1,33 @@
-export async function getMoviesBySearchTerm(input) {
-  //API Key
-  const apiKey = 'API KEY HERE'
+const OMDB_API_KEY = process.env.REACT_APP_OMDB_API_KEY;
+
+export const getMoviesBySearchTerm = async (input, typeState, page_num) => {
   //API URL
-  const URL = `http://www.omdbapi.com/?apikey=${apiKey}&s=${input}`;
+  const URL = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${input}&type=${typeState}&page=${page_num}`;
 
   //checks to see if fetch works out, otherwise return an error
   try {
-
     const response = await fetch(URL);
     const jsonData = await response.json();
-
-    /*
-    * main requirement is fulfilled, extra code below is optional
-    * for displaying data properly in a UI 
-    */
-    console.log(jsonData);
-
     return jsonData;
-
   } catch(e){
     console.log(e);
-
-    const err = {
-      Error: String(e)
-    };
-
+    const err = { Error: String(e) };
     return err;
   }
 }
 
-export async function getMovieDetailsById(input) {
-  //API Key
-  const apiKey = 'API KEY HERE'
+export const getMovieDetailsById = async (input) => {
   //API URL
-  const URL = `http://www.omdbapi.com/?apikey=${apiKey}&i=${input}`;
+  const URL = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${input}`;
 
   //checks to see if fetch works out, otherwise return an error
   try {
-
     const response = await fetch(URL);
     const jsonData = await response.json();
-
-    /*
-    * main requirement is fulfilled, extra code below is optional
-    * for displaying data properly in a UI 
-    */
-    console.log(jsonData);
-
     return jsonData;
-
   } catch(e){
     console.log(e);
-
-    const err = {
-      Error: String(e)
-    };
-
+    const err = { Error: String(e) };
     return err;
   }
 }

@@ -1,100 +1,108 @@
 import './App.css';
-import * as utilities from './utils.js'
+import { getMoviesBySearchTerm, getMovieDetailsById } from './utils';
 import React, { useState } from 'react';
-import MovieCard from './components/MovieCard.js';
 import MovieDetails from './components/MovieDetails.js'
 import Spinner from './components/Spinner.js';
+import Modal from './components/Modal.js';
+import MovieList from './components/MovieList';
+import Paginator from './components/Paginator';
 
 function App() {
-  // takes and stores user input using React Hooks
+  // React Hooks states
   const [searchTerm, setSearchTerm] = useState("");
-  const [IDSearchTerm, setIDSearchTerm] = useState("");
+  const [lastSearchTerm, setLastSearchTerm] = useState("");
 
-  // stores a loading state for UI to display
   const [isLoading, setLoadState] = useState(false);
+  const [DialogState, setDialogState] = useState(false);
 
-  // stores user interface output
-  const [UIOutput, setUIOutput] = useState(null);
+  const [movies, setMovies] = useState([]);
+  const [typeState, setTypeState] = useState("");
+  const [details, setDetails] = useState(null);
+  const [error, setError] = useState(null);
+  const [resultsNum, setResultsNum] = useState(0);
+  const [currPage, setCurrPage] = useState(1);
 
-  async function searchSubmit(input, choice){
-    setUIOutput(null);
+  const searchSubmit = async (input, page_num) => {
+    console.log(input, page_num)
+    setError(null);
+    setMovies([]);
     setLoadState(true);
 
-    if (input === ""){
-      setLoadState(false);
-      return;
-    }
-
-    var obj = null;
-
-    switch(choice){
-      case 0:
-      obj = await utilities.getMoviesBySearchTerm(input);
-        break;
-      case 1:
-      obj = await utilities.getMovieDetailsById(input);
-        break;
-      default:
-        break;
-    }
-
-    // extracts keys from json object and converts into array
+    var obj = await getMoviesBySearchTerm(input, typeState, page_num);
     const propertyKeys = Object.keys(obj);
 
-    if(propertyKeys.includes("Error")){
-      setUIOutput(<p>Error: {obj.Error}</p>);
+    if (propertyKeys.includes("Error")) {
+      setError(<p>Error: {obj.Error}</p>);
       setLoadState(false);
       return;
     }
 
-    if(choice === 0){
-      // initializes array that will contain our UI components to render to the screen
-      let outputArr = [];
-      for (const i in obj.Search) {
-        outputArr.push(<MovieCard key={i} value={obj.Search[i]} />);
-      }
-      setUIOutput(outputArr);
-    }
-
-    if (choice === 1) setUIOutput(<MovieDetails key={0} value={obj} />);
-
+    setResultsNum(parseInt(obj.totalResults));
+    setMovies(obj.Search);
     setLoadState(false);
   }
 
+  const IDSearchSubmit = async (input) => {
+    setDetails(null);
+    setDialogState(true);
+
+    var obj = await getMovieDetailsById(input);
+    setDetails(<MovieDetails key={0} value={obj} />);
+  }
+
+  //FOR FUN: lets user use the enter key to submit the value given in the input
+  const keyPress = (e) => {
+    if (e.keyCode === 13) {
+      if (searchTerm === "") return;
+      setCurrPage(1);
+      setLastSearchTerm(searchTerm);
+      searchSubmit(searchTerm, 1);
+      setSearchTerm("");
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        {/* App Logo */}
-        <img style={{ width: 150, paddingBottom: 20 }} src="https://www.nicepng.com/png/full/363-3636365_movie-camera-clipart-png-film-camera-vector-png.png" alt="W3Schools.com" />
-        
-        {/* App Name */}
-        <h1 style={{margin: 0}}>
-          Movie Search
-        </h1>
-        <br/>
+      <Modal children={details} isOpen={DialogState} onClose={(e) => setDialogState(false)} />
+      {/* App Logo */}
+      <img style={{ width: 150, paddingBottom: 20 }} src="https://www.nicepng.com/png/full/363-3636365_movie-camera-clipart-png-film-camera-vector-png.png" alt="W3Schools.com" />
 
-        {/* First user input; searches movies by title */}
-        <label>Search by Title:</label>
-        <br/>
-        <input type="text" placeholder="Title" onChange={e => setSearchTerm(String(e.target.value))} />
-        <button onClick={() => searchSubmit(searchTerm, 0)}>Submit</button>
-        <br/>
-        <br/>
+      {/* App Name */}
+      <h1 style={{ margin: 0 }}>
+        Movie Search
+      </h1>
+      <br />
 
-        {/* Second user input; searches specific movie by IMDb ID */}
-        <label>Search by IMDb ID:</label>
-        <br/>
-        <input type="text" placeholder="ID" onChange={e => setIDSearchTerm(String(e.target.value))} />
-        <button onClick={() => searchSubmit(IDSearchTerm, 1)}>Submit</button>
-        <br/>
-        <br/>
+      {/* user input */}
+      <input
+        type="text"
+        onKeyDown={keyPress}
+        placeholder="Search"
+        value={searchTerm}
+        onChange={e => setSearchTerm(String(e.target.value))}
+      />
+      <select onChange={(e) => setTypeState(e.target.value)} value={typeState}>
+      <option value="">type</option>
+        <option value="movie">movie</option>
+        <option value="series">series</option>
+        <option value="episode">episode</option>
+        <option value="game">game</option>
+      </select>
+      <br />
+      <br />
 
-        {/* Displays whatever state the app is in and what data is returned */}
-        <label>–Output–</label>
-        <br/>
-        <Spinner LoadState={isLoading} />
-        <div id="output">{UIOutput}</div>
-      </header>
+      {/* Displays whatever data is returned */}
+      <Spinner LoadState={isLoading} />
+      <div>{error}</div>
+      <Paginator
+        movies={movies}
+        lastSearchTerm={lastSearchTerm}
+        currPage={currPage}
+        resultsNum={resultsNum}
+        setCurrPage={setCurrPage}
+        searchSubmit={searchSubmit}
+      />
+      <MovieList onClick={IDSearchSubmit} movies={movies} />
     </div>
   );
 }
