@@ -3,7 +3,6 @@ import Spinner from './Spinner.js';
 
 let dialogStyles = {
     width: '90vw',
-    maxHeight: '80%',
     maxWidth: '100%',
     margin: '0 auto',
     position: 'fixed',

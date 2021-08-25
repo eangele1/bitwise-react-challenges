@@ -36,7 +36,6 @@
   height: fit-content;
   float: left;
   text-align: left;
-  min-height: 50vh;
 }
 
 #MovieDetails img {
@@ -70,4 +69,5 @@
   display: flex;
   flex-wrap: nowrap;
   margin: 0;
+  overflow-x: auto;
 }
